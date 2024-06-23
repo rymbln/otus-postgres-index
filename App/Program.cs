@@ -23,14 +23,17 @@ internal class Program
         dbContext.Database.EnsureCreated();
         Console.WriteLine("Database created.");
         
-        Console.WriteLine("Generate 1,000,000 user profiles.");
-        var profiles = GenerateUserProfiles(1000000);
-        var profilesExtended = profiles.Select(o => new UserExtended(o)).ToList();
+        var usersCount = dbContext.Users.Count();
+        if (usersCount == 0)
+        {
+            Console.WriteLine("Generate 1,000,000 user profiles.");
+            var profiles = GenerateUserProfiles(1000000);
+            var profilesExtended = profiles.Select(o => new UserExtended(o)).ToList();
 
-        Console.WriteLine("Inserting profiles");
-        dbContext.Users.AddRange(profilesExtended);
-        dbContext.SaveChanges();
-
+            Console.WriteLine("Inserting profiles");
+            dbContext.Users.AddRange(profilesExtended);
+            dbContext.SaveChanges();
+        }
         Console.WriteLine("User profiles inserted successfully.");
     }
 
