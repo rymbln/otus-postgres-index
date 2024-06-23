@@ -1,0 +1,22 @@
+services:
+  consoleapp1:
+    image: ${DOCKER_REGISTRY-}consoleapp1
+    build:
+      context: App
+      dockerfile: Dockerfile
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    hostname: postgres
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+        - 5432:5432
+    volumes:
+        - ./database-data:/var/lib/postgresql/data
+        - ./database-init:/docker-entrypoint-initdb.d
+        - ./database-backups:/backups   
+    
+    
