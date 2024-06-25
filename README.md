@@ -447,8 +447,23 @@ ORDER BY
 
 ### Поиск медленных запросов
 
+Полная версия
+
 ```sql
-SELECT * FROM pg_stat_statements ORDER BY total_time DESC;
+SELECT * FROM pg_stat_statements ORDER BY total_exec_time DESC;
+```
+
+Более компактный вариант
+
+```sql
+SELECT substring(query, 1, 50) AS short_query,
+              round(total_exec_time::numeric, 2) AS total_time,
+              calls,
+              round(mean_exec_time::numeric, 2) AS mean,
+              round((100 * total_exec_time / sum(total_exec_time::numeric) OVER ())::numeric, 2) AS percentage_cpu
+FROM  pg_stat_statements
+ORDER BY total_time DESC
+LIMIT 20;
 ```
 
 ### Поиск отсутствующих индексов
