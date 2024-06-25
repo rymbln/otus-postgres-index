@@ -16,6 +16,12 @@ docker-compose up -d
 docker-compose up -d postgres
 ```
 
+Подключение
+
+```
+docker exec -it postgres psql -U postgres -d postgres
+```
+
 ```
 CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
 ```
