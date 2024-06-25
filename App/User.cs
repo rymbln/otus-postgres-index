@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NpgsqlTypes;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -21,6 +23,7 @@ public class User
         Email = email ?? throw new ArgumentNullException(nameof(email));
         Gender = gender ?? throw new ArgumentNullException(nameof(gender));
         IpAddress = ipAddress ?? throw new ArgumentNullException(nameof(ipAddress));
+        IpAddressInet = new NpgsqlInet(ipAddress);
         IsActive = isActive;
         Birthdate = birthdate;
         Score = score;
@@ -46,15 +49,19 @@ public class User
     public bool IsActive { get; set; }
     [Column(Order = 8)]
     public string IpAddress { get; set; }
+    
     [Column(Order = 9)]
-    public int Score { get; set; }
+    public NpgsqlInet IpAddressInet { get; set; }
+
     [Column(Order = 10)]
-    public decimal Rank { get; set; }
+    public int Score { get; set; }
     [Column(Order = 11)]
-    public DateTime Created { get; set; }
+    public decimal Rank { get; set; }
     [Column(Order = 12)]
-    public Guid UniqueId { get; set; }
+    public DateTime Created { get; set; }
     [Column(Order = 13)]
+    public Guid UniqueId { get; set; }
+    [Column(Order = 14)]
     public List<string> Tags { get; set; } = new List<string>();
 }
 
