@@ -276,6 +276,40 @@ Execution Time: 4193.725 ms
 
 ## Индекс GIN
 
+### Поиск по постфиксам и фрагментам текста
+
+Добавляем сначала расширение
+
+```sql
+create extension if not exists pg_trgm;
+```
+
+Создаем индекс с триграммами
+
+```sql
+create index if not exists idx_fullname_gin on users using
+gin(first_name gin_trgm_ops, last_name gin_trgm_ops);
+```
+
+Теперь мы можем искать по фрагментам текста не только в начале строки
+
+```sql
+explain analyze
+select id, first_name, last_name, email, birthdate
+from public.users
+where first_name like '%oly%' and last_name like '%ola%'
+```
+
+```
+Bitmap Heap Scan on users  (cost=33.88..37.90 rows=1 width=48) (actual time=0.150..3.046 rows=8 loops=1)
+  Recheck Cond: ((first_name ~~ '%oly%'::text) AND (last_name ~~ '%ola%'::text))
+  Heap Blocks: exact=8
+  ->  Bitmap Index Scan on idx_fullname_gin  (cost=0.00..33.88 rows=1 width=0) (actual time=0.141..0.142 rows=8 loops=1)
+        Index Cond: ((first_name ~~ '%oly%'::text) AND (last_name ~~ '%ola%'::text))
+Planning Time: 4.039 ms
+Execution Time: 3.076 ms
+```
+
 ### Массивы
 
 ```sql
@@ -352,6 +386,33 @@ WHERE user_json_data -> 'tags' @> '["Kids & Kids", "Health"]'::JSONB;
 ```
 
 ## Индекс GIST
+
+### Регистронезависимый поиск по text
+
+Создаем индекс с триграммами
+
+```sql
+create index if not exists idx_fullname_gist on users using gist(first_name gist_trgm_ops, last_name gist_trgm_ops);
+```
+
+Ищем с условием ILIKE
+
+```sql
+explain analyze
+select id, first_name, last_name, email, birthdate
+from public.users
+where first_name ilike 'cla%' and last_name ilike 'co%'
+```
+
+```
+Index Scan using idx_fullname_gist on users  (cost=0.41..12.45 rows=2 width=48) (actual time=0.360..39.795 rows=98 loops=1)
+  Index Cond: ((first_name ~~* 'cla%'::text) AND (last_name ~~* 'co%'::text))
+  Rows Removed by Index Recheck: 18
+Planning Time: 1.190 ms
+Execution Time: 39.835 ms
+```
+
+### Поиск по типу inet
 
 ```sql
 create index if not exists idx_ip_address_btree on users using btree(ip_address);
