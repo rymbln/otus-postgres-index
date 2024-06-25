@@ -2,6 +2,8 @@
 
 Данный репозиторий содержит генератор тестовой базы данных для открытого урока по Postgres.
 
+Курс [Highload Architect](https://otus.ru/lessons/highloadarchitect/?utm_source=internal&utm_campaign=hl&utm_term=25.06.24&utm_content=lesson-qr)
+
 ## Запуск
 
 Для запуска и генерации тестовых данных нужно запустить
